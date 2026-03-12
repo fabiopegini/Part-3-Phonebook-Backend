@@ -45,15 +45,21 @@ app.get("/api/persons/:id", (req, res) => {
   if(person) return res.json(person)
 
   res.statusMessage = "Sorry, the resource you are looking for could not be found or does not exist"
-  return res.status(404).send("Person not found")
+  return res.status(404).send({error: "Person not found"})
 })
 
 app.post("/api/persons", (req, res) => {
   const newPerson = req.body
+  
+  if(!newPerson.name || !newPerson.number) return res.status(400).send({error: "Missing data, the person must have a Name and a Number"})
+  
+  const alreadyExists = persons.find(person => person.name === newPerson.name)
+  if(alreadyExists) return res.status(400).send({error: "The person was already added to the phonebook"})
+
   newPerson.id = Math.floor(Math.random() * 9000)
   persons.push(newPerson)
 
-  return res.status(200).send("The person was added successfully")
+  return res.status(200).send({success: "The person was added successfully"})
 })
 
 app.delete("/api/persons/:id", (req, res) => {
