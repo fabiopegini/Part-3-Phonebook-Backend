@@ -1,0 +1,24 @@
+{
+  "name": "phonebook-backend",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/fabiopegini/Part-3-Phonebook-Backend/tree/main#readme",
+  "bugs": {
+    "url": "https://github.com/fabiopegini/Part-3-Phonebook-Backend/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fabiopegini/Part-3-Phonebook-Backend.git#main"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "node --watch index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "5.2.1"
+  }
+}
