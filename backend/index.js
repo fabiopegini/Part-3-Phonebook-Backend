@@ -29,6 +29,10 @@ app.get("/", (req, res) => {
   res.send('<h1>Welcome! You might be looking for this: <a href="http://localhost:3001/api/persons">Persons JSON</a></h1>')
 })
 
+app.get("/info", (req, res) => {
+  res.send(`<p>Phonebook has info for ${persons.length} people</p><div>${new Date().toString()}</div>`)
+})
+
 app.get("/api/persons", (req, res) => {
   res.json(persons)
 })
