@@ -48,6 +48,14 @@ app.get("/api/persons/:id", (req, res) => {
   return res.status(404).send("Person not found")
 })
 
+app.post("/api/persons", (req, res) => {
+  const newPerson = req.body
+  newPerson.id = Math.floor(Math.random() * 9000)
+  persons.push(newPerson)
+
+  return res.status(200).send("The person was added successfully")
+})
+
 app.delete("/api/persons/:id", (req, res) => {
   const { id } = req.params
   persons = persons.filter(person => person.id.toString() !== id)
