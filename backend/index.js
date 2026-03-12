@@ -3,7 +3,7 @@ const app = express()
 
 app.use(express.json())
 
-const persons = [
+let persons = [
   { 
     "id": 1,
     "name": "Arto Hellas", 
@@ -46,6 +46,13 @@ app.get("/api/persons/:id", (req, res) => {
 
   res.statusMessage = "Sorry, the resource you are looking for could not be found or does not exist"
   return res.status(404).send("Person not found")
+})
+
+app.delete("/api/persons/:id", (req, res) => {
+  const { id } = req.params
+  persons = persons.filter(person => person.id.toString() !== id)
+
+  return res.status(204).end()
 })
 
 
