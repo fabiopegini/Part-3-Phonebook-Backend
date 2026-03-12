@@ -1,6 +1,8 @@
 const express = require("express")
 const app = express()
 
+app.use(express.json())
+
 const persons = [
   { 
     "id": 1,
@@ -35,6 +37,15 @@ app.get("/info", (req, res) => {
 
 app.get("/api/persons", (req, res) => {
   res.json(persons)
+})
+
+app.get("/api/persons/:id", (req, res) => {
+  const { id } = req.params
+  const person = persons.find(person => person.id.toString() === id)
+  if(person) return res.json(person)
+
+  res.statusMessage = "Sorry, the resource you are looking for could not be found or does not exist"
+  return res.status(404).send("Person not found")
 })
 
 
