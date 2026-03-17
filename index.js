@@ -1,7 +1,9 @@
 const express = require("express")
+const cors = require("cors")
 const app = express()
 
 app.use(express.json())
+app.use(cors())
 
 let persons = [
   { 
@@ -50,7 +52,7 @@ app.get("/api/persons/:id", (req, res) => {
 
 app.post("/api/persons", (req, res) => {
   const newPerson = req.body
-  
+
   if(!newPerson.name || !newPerson.number) return res.status(400).send({error: "Missing data, the person must have a Name and a Number"})
   
   const alreadyExists = persons.find(person => person.name === newPerson.name)
@@ -59,19 +61,19 @@ app.post("/api/persons", (req, res) => {
   newPerson.id = Math.floor(Math.random() * 9000)
   persons.push(newPerson)
 
-  return res.status(200).send({success: "The person was added successfully"})
+  return res.status(200).send({success: "The person was added successfully", data: newPerson})
 })
 
 app.delete("/api/persons/:id", (req, res) => {
   const { id } = req.params
   persons = persons.filter(person => person.id.toString() !== id)
 
-  return res.status(204).end()
+  return res.status(200).send({success: "The person was deleted successfully", data: id})
 })
 
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`)
+  console.log(`Server running on ${PORT}`)
 })
