@@ -1,6 +1,8 @@
+require('dotenv').config()
 const express = require("express")
 const cors = require("cors")
 const app = express()
+const Person = require('./models/person.js')
 
 app.use(express.json())
 app.use(cors())
@@ -39,16 +41,22 @@ app.get("/info", (req, res) => {
 })
 
 app.get("/api/persons", (req, res) => {
-  res.json(persons)
+  Person.find({}).then(persons => {
+    res.json(persons)
+  })
 })
 
 app.get("/api/persons/:id", (req, res) => {
   const { id } = req.params
-  const person = persons.find(person => person.id.toString() === id)
-  if(person) return res.json(person)
 
-  res.statusMessage = "Sorry, the resource you are looking for could not be found or does not exist"
-  return res.status(404).send({error: "Person not found"})
+  return Person.findById(id)
+    .then(person => {
+    if(person) return res.json(person)
+    })
+    .catch(err => {
+    res.statusMessage = "Sorry, the resource you are looking for could not be found or does not exist"
+    return res.status(404).send({error: "Person not found"})
+    })
 })
 
 app.post("/api/persons", (req, res) => {
@@ -73,7 +81,7 @@ app.delete("/api/persons/:id", (req, res) => {
 })
 
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 
 app.listen(PORT, () => {
   console.log(`Server running on ${PORT}`)
