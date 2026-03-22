@@ -37,7 +37,9 @@ app.get("/", (req, res) => {
 })
 
 app.get("/info", (req, res) => {
-  res.send(`<p>Phonebook has info for ${persons.length} people</p><div>${new Date().toString()}</div>`)
+  Person.find({}).then(persons => {
+    return res.send(`<p>Phonebook has info for ${persons.length} people</p><div>${new Date().toString()}</div>`)
+  })
 })
 
 app.get("/api/persons", (req, res) => {
@@ -51,26 +53,31 @@ app.get("/api/persons/:id", (req, res) => {
 
   return Person.findById(id)
     .then(person => {
-    if(person) return res.json(person)
+      if(person) return res.json(person)
     })
     .catch(err => {
-    res.statusMessage = "Sorry, the resource you are looking for could not be found or does not exist"
-    return res.status(404).send({error: "Person not found"})
+      res.statusMessage = "Sorry, the resource you are looking for could not be found or does not exist"
+      return res.status(404).send({error: "Person not found"})
     })
 })
 
-app.post("/api/persons", (req, res) => {
-  const newPerson = req.body
+app.post("/api/persons", async (req, res) => {
+  const body = req.body
 
-  if(!newPerson.name || !newPerson.number) return res.status(400).send({error: "Missing data, the person must have a Name and a Number"})
+  if(!body.name || !body.number) return res.status(400).send({error: "Missing data, the person must have a Name and a Number"})
   
-  const alreadyExists = persons.find(person => person.name === newPerson.name)
+  const alreadyExists = await Person.find({name: body.name})
+  .then(ArrWithPeople => ArrWithPeople.length > 0)
+  .catch(err => false)
+
   if(alreadyExists) return res.status(400).send({error: "The person was already added to the phonebook"})
 
-  newPerson.id = Math.floor(Math.random() * 9000)
-  persons.push(newPerson)
+  const newPerson = new Person({
+    name: body.name,
+    number: body.number
+  })
 
-  return res.status(200).send({success: "The person was added successfully", data: newPerson})
+  return newPerson.save().then(savedPerson => res.status(200).send({success: `The person ${savedPerson.name} was added successfully`}))
 })
 
 app.delete("/api/persons/:id", (req, res) => {
