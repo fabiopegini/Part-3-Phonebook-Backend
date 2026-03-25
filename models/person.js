@@ -1,8 +1,5 @@
 const mongoose = require("mongoose")
 
-const dns = require("dns")
-dns.setServers(["1.1.1.1"])
-
 mongoose.set('strictQuery',false)
 
 const url = process.env.MONGODB_URI

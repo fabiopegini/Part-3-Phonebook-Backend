@@ -49,7 +49,21 @@ app.post("/api/persons", async (req, res) => {
   })
 
   return newPerson.save()
-    .then(savedPerson => res.status(200).send({success: `The person ${savedPerson.name} was added successfully`}))
+    .then(savedPerson => res.status(201).send({success: `The person ${savedPerson.name} was added successfully`, savedPerson}))
+})
+
+app.put("/api/persons/:id", (req, res, next) => {
+  const { id } = req.params
+  const body = req.body
+  const newNumber = body.number
+
+  if(!newNumber) return res.status(400).send({error: "You must provide a number"})
+
+  return Person.findByIdAndUpdate(id, {number: newNumber}, {returnDocument: 'after'})
+    .then(updatedPerson => {
+      return res.status(200).send({success: `The number of ${updatedPerson.name} was successfully modified`, updatedPerson})
+    })
+    .catch(error => next(error))
 })
 
 app.delete("/api/persons/:id", (req, res, next) => {
