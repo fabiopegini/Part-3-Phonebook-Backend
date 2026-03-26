@@ -38,7 +38,7 @@ app.get("/api/persons/:id", (req, res, next) => {
     .catch(error => next(error))
 })
 
-app.post("/api/persons", async (req, res) => {
+app.post("/api/persons", async (req, res, next) => {
   const body = req.body
 
   if(!body.name || !body.number) return res.status(400).send({error: "Missing data, the person must have a Name and a Number"})
@@ -50,6 +50,7 @@ app.post("/api/persons", async (req, res) => {
 
   return newPerson.save()
     .then(savedPerson => res.status(201).send({success: `The person ${savedPerson.name} was added successfully`, savedPerson}))
+    .catch(error => next(error))
 })
 
 app.put("/api/persons/:id", (req, res, next) => {
@@ -59,10 +60,8 @@ app.put("/api/persons/:id", (req, res, next) => {
 
   if(!newNumber) return res.status(400).send({error: "You must provide a number"})
 
-  return Person.findByIdAndUpdate(id, {number: newNumber}, {returnDocument: 'after'})
-    .then(updatedPerson => {
-      return res.status(200).send({success: `The number of ${updatedPerson.name} was successfully modified`, updatedPerson})
-    })
+  return Person.findByIdAndUpdate(id, {number: newNumber}, {returnDocument: 'after', runValidators: true})
+    .then(updatedPerson => res.status(200).send({success: `The number of ${updatedPerson.name} was successfully modified`, updatedPerson}))
     .catch(error => next(error))
 })
 
@@ -76,7 +75,8 @@ app.delete("/api/persons/:id", (req, res, next) => {
 
 const errorHandler = (error, request, response, next) => {
   if(error.name === "CastError") return response.status(400).send({error: "Malformatted ID"})
-
+  if(error.name === "ValidationError") return response.status(400).json({error: error.message})
+  
   next(error)
 }
 
