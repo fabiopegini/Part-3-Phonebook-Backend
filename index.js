@@ -72,14 +72,19 @@ app.delete('/api/persons/:id', (req, res, next) => {
     .catch(error => next(error))
 })
 
-const errorHandler = (error, request, response, next) => {
-  if (error.name === 'CastError') return response.status(400).send({ error: 'Malformatted ID' })
-  if (error.name === 'ValidationError') return response.status(400).json({ error: error.message })
+const errorHandler = (error, req, res, next) => {
+  if (error.name === 'CastError') return res.status(400).send({ error: 'Malformatted ID' })
+  if (error.name === 'ValidationError') return res.status(400).json({ error: error.message })
 
   next(error)
 }
 
+const notFound = (req, res, next) => {
+  return res.status(404).json({ message: 'Sorry, the resource you are looking for does not exist' })
+}
+
 app.use(errorHandler)
+app.use(notFound)
 
 const PORT = process.env.PORT
 
